@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Global COVID-19 Intelligence Dashboard | DSC327 Data Visualization</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Tooltip (shared across all D3 charts) -->
+    <div class="tooltip"></div>
+
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="preloader-text">Loading Insights</div>
+            <div class="preloader-bar">
+                <div class="preloader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="logo-text">
+                    COVID<span class="logo-highlight">Intelligence</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Dashboard</a>
+                <a href="#insights" class="nav-link">Insights</a>
+                <a href="#analytics" class="nav-link">Analytics</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#home" class="mobile-link">Dashboard</a>
+        <a href="#insights" class="mobile-link">Insights</a>
+        <a href="#analytics" class="mobile-link">Analytics</a>
+        <a href="#about" class="mobile-link">About</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-bg">
+            <div class="hero-bg-gradient"></div>
+            <div class="hero-bg-particles"></div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-badge">
+                <span class="badge-pulse"></span>
+                <span>Live Data Intelligence</span>
+            </div>
+            <h1 class="hero-title">
+                Understanding the<br>
+                <span class="gradient-text">Global Pandemic</span><br>
+                Through Data
+            </h1>
+            <p class="hero-subtitle">
+                Advanced interactive visualizations providing real-time insights into COVID-19's global impact,
+                helping you understand patterns, trends, and critical metrics across 200+ countries.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn-primary" id="exploreBtn">
+                    Explore Dashboard <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="btn-secondary" id="watchDemoBtn">
+                    <i class="fas fa-play"></i> Watch Demo
+                </button>
+            </div>
+            <div class="hero-stats" id="heroStats">
+                <div class="hero-stat">
+                    <div class="stat-number" id="heroTotalCases">--</div>
+                    <div class="stat-label">Total Cases</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number" id="heroTotalDeaths">--</div>
+                    <div class="stat-label">Total Deaths</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number" id="heroRecoveryRate">--</div>
+                    <div class="stat-label">Recovery Rate</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number" id="heroAffected">--</div>
+                    <div class="stat-label">Affected Countries</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <div class="scroll-mouse"></div>
+            <div class="scroll-text">Scroll to explore</div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="dashboard">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Interactive Dashboard</span>
+                </div>
+                <h2 class="section-title">Real-Time <span class="gradient-text">Data Visualization</span></h2>
+                <p class="section-subtitle">8 interactive visualizations providing comprehensive pandemic analysis</p>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel glass-card">
+                <div class="control-panel-header">
+                    <i class="fas fa-sliders-h"></i>
+                    <h3>Dashboard Controls</h3>
+                    <span class="control-panel-badge">Interactive</span>
+                </div>
+                <div class="control-panel-body">
+                    <div class="control-group">
+                        <label><i class="fas fa-chart-simple"></i> Primary Metric</label>
+                        <select id="metricSelect" class="control-select">
+                            <option value="confirmed">Total Confirmed Cases</option>
+                            <option value="deaths">Total Deaths</option>
+                            <option value="recovered">Total Recovered</option>
+                            <option value="active">Active Cases</option>
+                            <option value="critical">Critical Cases</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label><i class="fas fa-globe"></i> Region Filter</label>
+                        <select id="regionSelect" class="control-select">
+                            <option value="all">🌍 Global</option>
+                            <option value="asia">🌏 Asia</option>
+                            <option value="europe">🌍 Europe</option>
+                            <option value="americas">🌎 Americas</option>
+                            <option value="africa">🌍 Africa</option>
+                            <option value="oceania">🌏 Oceania</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label><i class="fas fa-chart-line"></i> Chart Animation</label>
+                        <select id="animationSelect" class="control-select">
+                            <option value="true">Smooth Animation</option>
+                            <option value="false">Static Display</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label><i class="fas fa-download"></i> Export Data</label>
+                        <button id="exportBtn" class="control-export-btn">
+                            <i class="fas fa-download"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-virus"></i></div>
+                    <div class="stat-card-value" id="statTotalCases">--</div>
+                    <div class="stat-card-label">Total Confirmed</div>
+                    <div class="stat-card-trend positive" id="casesTrend">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-skull"></i></div>
+                    <div class="stat-card-value" id="statTotalDeaths">--</div>
+                    <div class="stat-card-label">Total Deaths</div>
+                    <div class="stat-card-trend negative" id="deathsTrend">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-heartbeat"></i></div>
+                    <div class="stat-card-value" id="statTotalRecovered">--</div>
+                    <div class="stat-card-label">Total Recovered</div>
+                    <div class="stat-card-trend positive" id="recoveredTrend">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-card-value" id="statFatalityRate">--</div>
+                    <div class="stat-card-label">Fatality Rate</div>
+                    <div class="stat-card-trend" id="fatalityTrend">Global Average</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-procedures"></i></div>
+                    <div class="stat-card-value" id="statActiveCases">--</div>
+                    <div class="stat-card-label">Active Cases</div>
+                    <div class="stat-card-trend" id="activeTrend">Currently Infected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-flag-checkered"></i></div>
+                    <div class="stat-card-value" id="statAffectedCountries">--</div>
+                    <div class="stat-card-label">Countries Affected</div>
+                    <div class="stat-card-trend">Worldwide</div>
+                </div>
+            </div>
+
+            <!-- Visualization Grid -->
+            <div class="viz-grid">
+                <!-- Chart 1: Choropleth Map -->
+                <div class="viz-card viz-card-full">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <div>
+                                <h3>Global Heatmap Analysis</h3>
+                                <p>Color intensity represents COVID-19 impact across 200+ countries</p>
+                            </div>
+                        </div>
+                        <div class="viz-card-actions">
+                            <button class="viz-action-btn" id="mapResetBtn" title="Reset View"><i class="fas fa-undo-alt"></i></button>
+                            <button class="viz-action-btn" id="mapZoomInBtn" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+                            <button class="viz-action-btn" id="mapZoomOutBtn" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="choroplethMap" class="map-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-info-circle"></i> Hover over any country to see detailed statistics</span>
+                        <span><i class="fas fa-mouse-pointer"></i> Drag to pan | Scroll to zoom</span>
+                    </div>
+                </div>
+
+                <!-- Chart 2 & 3: Top Countries & Donut Chart -->
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            <div>
+                                <h3>Top Affected Nations</h3>
+                                <p>Ranking by selected metric</p>
+                            </div>
+                        </div>
+                        <div class="viz-card-actions">
+                            <button class="viz-action-btn" id="sortBarBtn" title="Toggle Sort"><i class="fas fa-sort-amount-down"></i></button>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="barChart" class="bar-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-chart-simple"></i> Hover bars for exact values · Click sort to toggle order</span>
+                    </div>
+                </div>
+
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-chart-pie"></i>
+                            <div>
+                                <h3>Distribution Analysis</h3>
+                                <p>Global case distribution by region</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="pieChart" class="pie-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-percent"></i> Each slice represents regional contribution</span>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Time Series -->
+                <div class="viz-card viz-card-full">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-chart-line"></i>
+                            <div>
+                                <h3>Temporal Evolution Analysis</h3>
+                                <p>Historical trends of cases, deaths, and recoveries over time</p>
+                            </div>
+                        </div>
+                        <div class="time-range-selector">
+                            <button class="time-btn active" data-range="30d">30 Days</button>
+                            <button class="time-btn" data-range="90d">90 Days</button>
+                            <button class="time-btn" data-range="1y">1 Year</button>
+                            <button class="time-btn" data-range="all">All Data</button>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="lineChart" class="line-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-chart-line"></i> Hover for precise values at any point in time</span>
+                    </div>
+                </div>
+
+                <!-- Chart 5: Bubble Chart -->
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-braille"></i>
+                            <div>
+                                <h3>Multivariate Analysis</h3>
+                                <p>Bubble size = Cases | Color = Fatality Rate</p>
+                            </div>
+                        </div>
+                        <div class="viz-card-actions">
+                            <button class="viz-action-btn" id="resetBubbleBtn" title="Reset"><i class="fas fa-undo-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="bubbleChart" class="bubble-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-circle-dot"></i> X: Cases (log) | Y: Fatality Rate | Hover for details</span>
+                    </div>
+                </div>
+
+                <!-- Chart 6: Horizontal Bar Chart -->
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-chart-simple"></i>
+                            <div>
+                                <h3>Fatality Rate Ranking</h3>
+                                <p>Countries with highest mortality rates</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="horizontalBarChart" class="hbar-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-percent"></i> Fatality rate = (Deaths / Cases) × 100</span>
+                    </div>
+                </div>
+
+                <!-- Chart 7: Treemap -->
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-th-large"></i>
+                            <div>
+                                <h3>Hierarchical Impact View</h3>
+                                <p>Treemap by region and country</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="treemapChart" class="treemap-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-chart-simple"></i> Area = Total cases | Color = Region</span>
+                    </div>
+                </div>
+
+                <!-- Chart 8: Radar Chart -->
+                <div class="viz-card viz-card-full">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-star-of-life"></i>
+                            <div>
+                                <h3>Country Comparison Radar</h3>
+                                <p>Multi-dimensional comparison of selected countries</p>
+                            </div>
+                        </div>
+                        <div class="viz-card-actions" style="gap:0.75rem; display:flex;">
+                            <select id="radarCountry1" class="country-select">
+                                <option value="">Select Country 1</option>
+                            </select>
+                            <select id="radarCountry2" class="country-select">
+                                <option value="">Select Country 2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="radarChart" class="radar-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-chart-simple"></i> Compare 6 metrics between any two countries</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insights Section -->
+    <section id="insights" class="insights">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Data-Driven Insights</span>
+                </div>
+                <h2 class="section-title">Key <span class="gradient-text">Discoveries</span></h2>
+                <p class="section-subtitle">Advanced analytics revealing critical patterns in pandemic data</p>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Exponential Growth Patterns</h3>
+                    <p>Analysis reveals three distinct pandemic waves with varying peak magnitudes and durations across regions.</p>
+                    <div class="insight-metric">
+                        <span>Peak Daily Cases</span>
+                        <strong>~800,000</strong>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-percent"></i></div>
+                    <h3>Mortality Disparities</h3>
+                    <p>Significant variation in fatality rates (0.5% - 15%) correlates with healthcare infrastructure quality.</p>
+                    <div class="insight-metric">
+                        <span>Global Average</span>
+                        <strong>2.1%</strong>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-syringe"></i></div>
+                    <h3>Vaccination Efficacy</h3>
+                    <p>Countries with >70% vaccination rates show 90% reduction in severe outcomes.</p>
+                    <div class="insight-metric">
+                        <span>Effectiveness</span>
+                        <strong>90%</strong>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-globe-americas"></i></div>
+                    <h3>Geographic Clustering</h3>
+                    <p>Strong spatial correlation in outbreak patterns across neighboring countries.</p>
+                    <div class="insight-metric">
+                        <span>Correlation</span>
+                        <strong>85%</strong>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-city"></i></div>
+                    <h3>Urban Vulnerability</h3>
+                    <p>Urban centers experienced 3x higher infection rates compared to rural areas.</p>
+                    <div class="insight-metric">
+                        <span>Urban Impact</span>
+                        <strong>3x Higher</strong>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Recovery Trajectories</h3>
+                    <p>Average recovery time decreased by 40% due to improved treatment protocols.</p>
+                    <div class="insight-metric">
+                        <span>Improvement</span>
+                        <strong>40% Faster</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics Section -->
+    <section id="analytics" class="analytics">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Advanced Analytics</span>
+                </div>
+                <h2 class="section-title">Statistical <span class="gradient-text">Metrics</span></h2>
+                <p class="section-subtitle">Comprehensive statistical analysis of pandemic data</p>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <i class="fas fa-calculator"></i>
+                        <h3>Statistical Summary</h3>
+                    </div>
+                    <div class="analytics-stats" id="statisticalStats">
+                        <div class="analytics-row">
+                            <span>Mean Cases</span>
+                            <span id="meanCases">--</span>
+                        </div>
+                        <div class="analytics-row">
+                            <span>Median Cases</span>
+                            <span id="medianCases">--</span>
+                        </div>
+                        <div class="analytics-row">
+                            <span>Standard Deviation</span>
+                            <span id="stdDevCases">--</span>
+                        </div>
+                        <div class="analytics-row">
+                            <span>Total Cases</span>
+                            <span id="sumCases">--</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Growth Metrics</h3>
+                    </div>
+                    <div class="analytics-stats" id="growthStats">
+                        <div class="analytics-row">
+                            <span>Global Growth Rate</span>
+                            <span id="growthRate">--</span>
+                        </div>
+                        <div class="analytics-row">
+                            <span>Highest Growth</span>
+                            <span id="highestGrowth">--</span>
+                        </div>
+                        <div class="analytics-row">
+                            <span>Doubling Time</span>
+                            <span id="doublingTime">--</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Correlation Analysis</h3>
+                    </div>
+                    <div class="analytics-stats" id="correlationStats">
+                        <div class="analytics-row">
+                            <span>Cases vs Population</span>
+                            <span id="corrPopulation">--</span>
+                        </div>
+                        <div class="analytics-row">
+                            <span>Deaths vs Cases</span>
+                            <span id="corrDeaths">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <div class="section-tag">
+                        <i class="fas fa-info-circle"></i>
+                        <span>About This Project</span>
+                    </div>
+                    <h2>Data Visualization <span class="gradient-text">Excellence</span></h2>
+                    <p>This comprehensive dashboard demonstrates advanced data visualization techniques using D3.js, transforming complex pandemic data into actionable insights through 8 interactive visualizations.</p>
+                    <div class="tech-stack">
+                        <h4>Technologies Used</h4>
+                        <div class="tech-badges">
+                            <span class="tech-badge"><i class="fab fa-js"></i> D3.js v7</span>
+                            <span class="tech-badge"><i class="fab fa-html5"></i> HTML5</span>
+                            <span class="tech-badge"><i class="fab fa-css3-alt"></i> CSS3</span>
+                            <span class="tech-badge"><i class="fas fa-chart-line"></i> Interactive Viz</span>
+                            <span class="tech-badge"><i class="fas fa-mobile-alt"></i> Responsive</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(59,130,246,0.1)" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#3B82F6" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="57" stroke-linecap="round"/>
+                        </svg>
+                        <div class="stat-circle-content">
+                            <span class="stat-circle-number">8</span>
+                            <span class="stat-circle-label">Visualizations</span>
+                        </div>
+                    </div>
+                    <div class="stat-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(59,130,246,0.1)" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#3B82F6" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="85" stroke-linecap="round"/>
+                        </svg>
+                        <div class="stat-circle-content">
+                            <span class="stat-circle-number">200+</span>
+                            <span class="stat-circle-label">Countries</span>
+                        </div>
+                    </div>
+                    <div class="stat-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(59,130,246,0.1)" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#3B82F6" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="28" stroke-linecap="round"/>
+                        </svg>
+                        <div class="stat-circle-content">
+                            <span class="stat-circle-number">100%</span>
+                            <span class="stat-circle-label">Interactive</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-chart-line"></i>
+                    <span>COVID<span>Intelligence</span></span>
+                </div>
+                <p class="footer-text">DSC327 - Data Visualization Techniques | Semester Project</p>
+                <p class="footer-text">Data Source: disease.sh API | JHU CSSE COVID-19 Dataset</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button id="backToTop" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Scripts: D3 first, then charts (depends on D3), then app (depends on both) -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

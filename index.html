@@ -11,10 +11,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-
     <!-- Tooltip (shared across all D3 charts) -->
     <div class="tooltip"></div>
 
@@ -76,7 +72,7 @@
         <div class="hero-container">
             <div class="hero-badge">
                 <span class="badge-pulse"></span>
-                <span>Live Data Intelligence</span>
+                <span>Data Intelligence Dashboard</span>
             </div>
             <h1 class="hero-title">
                 Understanding the<br>
@@ -84,8 +80,8 @@
                 Through Data
             </h1>
             <p class="hero-subtitle">
-                Advanced interactive visualizations providing real-time insights into COVID-19's global impact,
-                helping you understand patterns, trends, and critical metrics across 200+ countries.
+                Eight interactive visualizations built on the Kaggle COVID-19 dataset, revealing pandemic patterns,
+                regional disparities, and critical metrics across 208 countries from January to July 2020.
             </p>
             <div class="hero-buttons">
                 <button class="btn-primary" id="exploreBtn">
@@ -148,6 +144,10 @@
                             <option value="recovered">Total Recovered</option>
                             <option value="active">Active Cases</option>
                             <option value="critical">Critical Cases</option>
+                            <option value="casesPerMillion">Cases per Million</option>
+                            <option value="deathsPerMillion">Deaths per Million</option>
+                            <option value="totalTests">Total Tests</option>
+                            <option value="testsPerMillion">Tests per Million</option>
                         </select>
                     </div>
                     <div class="control-group">
@@ -159,6 +159,15 @@
                             <option value="americas">🌎 Americas</option>
                             <option value="africa">🌍 Africa</option>
                             <option value="oceania">🌏 Oceania</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label><i class="fas fa-list-ol"></i> Top N Countries</label>
+                        <select id="topNSelect" class="control-select">
+                            <option value="10">Top 10</option>
+                            <option value="15">Top 15</option>
+                            <option value="20">Top 20</option>
+                            <option value="30">Top 30</option>
                         </select>
                     </div>
                     <div class="control-group">
@@ -295,10 +304,13 @@
                             </div>
                         </div>
                         <div class="time-range-selector">
-                            <button class="time-btn active" data-range="30d">30 Days</button>
-                            <button class="time-btn" data-range="90d">90 Days</button>
-                            <button class="time-btn" data-range="1y">1 Year</button>
-                            <button class="time-btn" data-range="all">All Data</button>
+                            <button class="line-mode-btn active" data-mode="cumulative">Cumulative</button>
+                            <button class="line-mode-btn" data-mode="daily">Daily New</button>
+                            <span style="margin:0 6px;opacity:0.3">|</span>
+                            <button class="time-btn active" data-range="all">All</button>
+                            <button class="time-btn" data-range="1y">1Y</button>
+                            <button class="time-btn" data-range="90d">90D</button>
+                            <button class="time-btn" data-range="30d">30D</button>
                         </div>
                     </div>
                     <div class="viz-card-body">
@@ -327,7 +339,7 @@
                         <div id="bubbleChart" class="bubble-container"></div>
                     </div>
                     <div class="viz-card-footer">
-                        <span><i class="fas fa-circle-dot"></i> X: Cases (log) | Y: Fatality Rate | Hover for details</span>
+                        <span><i class="fas fa-circle-dot"></i> X: Cases/Million (log) | Y: Deaths/Million (log) | Bubble size: Tests/Million | Color: Continent</span>
                     </div>
                 </div>
 
@@ -366,6 +378,25 @@
                     </div>
                     <div class="viz-card-footer">
                         <span><i class="fas fa-chart-simple"></i> Area = Total cases | Color = Region</span>
+                    </div>
+                </div>
+
+                <!-- Chart 7b: Case Outcome by Continent -->
+                <div class="viz-card">
+                    <div class="viz-card-header">
+                        <div class="viz-card-title">
+                            <i class="fas fa-layer-group"></i>
+                            <div>
+                                <h3>Case Outcome by Region</h3>
+                                <p>Recovery, active &amp; fatality breakdown per continent</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viz-card-body">
+                        <div id="outcomeChart" class="outcome-container"></div>
+                    </div>
+                    <div class="viz-card-footer">
+                        <span><i class="fas fa-chart-simple"></i> 100% stacked — share of confirmed cases by outcome per continent</span>
                     </div>
                 </div>
 
@@ -414,56 +445,56 @@
             <div class="insights-grid">
                 <div class="insight-card">
                     <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
-                    <h3>Exponential Growth Patterns</h3>
-                    <p>Analysis reveals three distinct pandemic waves with varying peak magnitudes and durations across regions.</p>
+                    <h3>Exponential First Wave</h3>
+                    <p>Global confirmed cases grew from near zero in January to 19.2 million by late July 2020 — doubling roughly every 3 weeks at peak velocity.</p>
                     <div class="insight-metric">
-                        <span>Peak Daily Cases</span>
-                        <strong>~800,000</strong>
+                        <span>Peak Daily New Cases (Jul 27)</span>
+                        <strong>~230,000</strong>
                     </div>
                 </div>
                 <div class="insight-card">
                     <div class="insight-icon"><i class="fas fa-percent"></i></div>
-                    <h3>Mortality Disparities</h3>
-                    <p>Significant variation in fatality rates (0.5% - 15%) correlates with healthcare infrastructure quality.</p>
+                    <h3>Fatality Rate Disparities</h3>
+                    <p>Case fatality rates range from under 0.5% to 15.5% across countries — heavily influenced by testing coverage rather than healthcare quality alone.</p>
                     <div class="insight-metric">
-                        <span>Global Average</span>
-                        <strong>2.1%</strong>
+                        <span>Global Fatality Rate</span>
+                        <strong>~3.7%</strong>
                     </div>
                 </div>
                 <div class="insight-card">
-                    <div class="insight-icon"><i class="fas fa-syringe"></i></div>
-                    <h3>Vaccination Efficacy</h3>
-                    <p>Countries with >70% vaccination rates show 90% reduction in severe outcomes.</p>
+                    <div class="insight-icon"><i class="fas fa-vial"></i></div>
+                    <h3>Testing Inequality</h3>
+                    <p>Testing capacity varied by over 1,000x between nations. Countries with low tests/million show inflated fatality rates — more cases undetected, not more deaths.</p>
                     <div class="insight-metric">
-                        <span>Effectiveness</span>
-                        <strong>90%</strong>
+                        <span>Max Tests per Million</span>
+                        <strong>&gt;300,000</strong>
                     </div>
                 </div>
                 <div class="insight-card">
                     <div class="insight-icon"><i class="fas fa-globe-americas"></i></div>
-                    <h3>Geographic Clustering</h3>
-                    <p>Strong spatial correlation in outbreak patterns across neighboring countries.</p>
+                    <h3>Americas Dominance</h3>
+                    <p>North and South America together accounted for over 55% of all global cases by July 2020, driven by the USA (5M) and Brazil (2.9M) outbreaks.</p>
                     <div class="insight-metric">
-                        <span>Correlation</span>
-                        <strong>85%</strong>
+                        <span>Americas Share of Cases</span>
+                        <strong>~55%</strong>
                     </div>
                 </div>
                 <div class="insight-card">
-                    <div class="insight-icon"><i class="fas fa-city"></i></div>
-                    <h3>Urban Vulnerability</h3>
-                    <p>Urban centers experienced 3x higher infection rates compared to rural areas.</p>
+                    <div class="insight-icon"><i class="fas fa-chart-bar"></i></div>
+                    <h3>Deaths vs Cases Correlation</h3>
+                    <p>Deaths and confirmed cases show near-perfect Pearson correlation (r ≈ 0.97) globally, confirming that case burden is the strongest predictor of mortality count.</p>
                     <div class="insight-metric">
-                        <span>Urban Impact</span>
-                        <strong>3x Higher</strong>
+                        <span>Pearson r (Deaths vs Cases)</span>
+                        <strong>~0.97</strong>
                     </div>
                 </div>
                 <div class="insight-card">
-                    <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
-                    <h3>Recovery Trajectories</h3>
-                    <p>Average recovery time decreased by 40% due to improved treatment protocols.</p>
+                    <div class="insight-icon"><i class="fas fa-heartbeat"></i></div>
+                    <h3>Global Recovery Rate</h3>
+                    <p>Despite the scale of the outbreak, 63% of confirmed cases recovered by July 2020. Asia and Oceania showed the highest recovery rates proportionally.</p>
                     <div class="insight-metric">
-                        <span>Improvement</span>
-                        <strong>40% Faster</strong>
+                        <span>Global Recovery Rate</span>
+                        <strong>63%</strong>
                     </div>
                 </div>
             </div>
@@ -514,15 +545,15 @@
                     </div>
                     <div class="analytics-stats" id="growthStats">
                         <div class="analytics-row">
-                            <span>Global Growth Rate</span>
+                            <span>Avg Cases per Million</span>
                             <span id="growthRate">--</span>
                         </div>
                         <div class="analytics-row">
-                            <span>Highest Growth</span>
+                            <span>Highest Cases/Million</span>
                             <span id="highestGrowth">--</span>
                         </div>
                         <div class="analytics-row">
-                            <span>Doubling Time</span>
+                            <span>Total Tests Conducted</span>
                             <span id="doublingTime">--</span>
                         </div>
                     </div>
@@ -534,11 +565,11 @@
                     </div>
                     <div class="analytics-stats" id="correlationStats">
                         <div class="analytics-row">
-                            <span>Cases vs Population</span>
+                            <span>Countries with Test Data</span>
                             <span id="corrPopulation">--</span>
                         </div>
                         <div class="analytics-row">
-                            <span>Deaths vs Cases</span>
+                            <span>Deaths vs Cases (Pearson r)</span>
                             <span id="corrDeaths">--</span>
                         </div>
                     </div>
@@ -613,13 +644,20 @@
                     <i class="fas fa-chart-line"></i>
                     <span>COVID<span>Intelligence</span></span>
                 </div>
-                <p class="footer-text">DSC327 - Data Visualization Techniques | Semester Project</p>
-                <p class="footer-text">Data Source: disease.sh API | JHU CSSE COVID-19 Dataset</p>
-                <div class="footer-links">
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
+                <p class="footer-text">Data Visualization Techniques &nbsp;|&nbsp; Semester Project</p>
+                <p class="footer-text">Data Source: Kaggle COVID-19 Dataset (Worldometer) &nbsp;|&nbsp; Period: Jan 22 – Jul 27, 2020</p>
+                <div class="footer-credits">
+                    <div class="footer-credit-item">
+                        <span class="credit-name">Hira Baig</span>
+                        <span class="credit-id">SP23-BDS-019</span>
+                    </div>
+                    <div class="footer-credit-divider">·</div>
+                    <div class="footer-credit-item">
+                        <span class="credit-name">Omer Bin Dawood</span>
+                        <span class="credit-id">SP23-BDS-041</span>
+                    </div>
                 </div>
+                <p class="footer-supervisor">Submitted to: <strong>Dr. Shaneela Naz</strong></p>
             </div>
         </div>
     </footer>

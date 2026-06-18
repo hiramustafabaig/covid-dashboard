@@ -360,7 +360,7 @@ const doc = new Document({
 
         new Paragraph({
           alignment: AlignmentType.CENTER,
-          children: [new TextRun({ text: 'Data Period: January 22 – July 27, 2020  |  208 Countries  |  9 Visualizations  |  D3.js v7', size: 18, italics: true, color: '6B7280' })]
+          children: [new TextRun({ text: 'Live: https://omerbindawood.github.io/covid-dashboard/  |  208 Countries  |  9 Visualizations  |  D3.js v7', size: 18, italics: true, color: '6B7280' })]
         }),
 
         new Paragraph({ children: [new PageBreak()] })
@@ -729,6 +729,7 @@ const doc = new Document({
           columnWidths: [3000, 6026],
           rows: [
             dataRow(['Project Title', 'COVID Intelligence Dashboard'], [3000, 6026], false),
+            dataRow(['Live URL', 'https://omerbindawood.github.io/covid-dashboard/'], [3000, 6026], true),
             dataRow(['Course', 'Data Visualization Techniques'], [3000, 6026], true),
             dataRow(['Instructor', 'Dr. Shaneela Naz'], [3000, 6026], false),
             dataRow(['Team Member 1', 'Hira Baig — SP23-BDS-019'], [3000, 6026], true),

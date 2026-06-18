@@ -1,37 +1,71 @@
-# DSC327 - COVID-19 Global Insights Dashboard
+# COVID Intelligence Dashboard
 
-## Data Visualization Techniques - Semester Project
+**Live Demo → [https://omerbindawood.github.io/covid-dashboard/](https://omerbindawood.github.io/covid-dashboard/)**
 
-### Project Overview
+An interactive global pandemic data visualization platform built with D3.js v7. Covers 208 countries across 188 days (January 22 – July 27, 2020) using real Kaggle COVID-19 data.
 
-This interactive web-based dashboard visualizes global COVID-19 data using advanced D3.js visualization techniques. The dashboard provides multiple interactive visualizations including a choropleth map, bubble chart, bar chart, and time series line chart, allowing users to explore pandemic trends across countries and over time.
+---
 
-### Features
+## Project Info
 
-- **Choropleth World Map**: Color-coded map showing COVID-19 impact by country with hover tooltips
-- **Interactive Bubble Chart**: Visualizes relationship between cases and fatality rates with zoom and pan
-- **Top Countries Bar Chart**: Ranking of most affected countries with sorting and hover details
-- **Time Series Analysis**: Line chart showing trends over time with multiple metric options
-- **Interactive Controls**: Filter by metric, region, and number of countries
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
-- **Dark/Light Theme**: Toggle between light and dark themes
-- **Smooth Animations**: Micro-interactions and smooth transitions throughout
+| | |
+|---|---|
+| **Course** | Data Visualization Techniques |
+| **Instructor** | Dr. Shaneela Naz |
+| **Team** | Hira Baig (SP23-BDS-019) · Omer Bin Dawood (SP23-BDS-041) |
+| **Data** | Kaggle COVID-19 Dataset (Worldometer) |
+| **Data Period** | Jan 22 – Jul 27, 2020 · 208 countries |
 
-### Technologies Used
+---
 
-- HTML5
-- CSS3 (with Glassmorphism effects)
-- JavaScript (ES6+)
-- D3.js v7 for visualizations
-- Font Awesome 6 for icons
-- Google Fonts (Inter, Poppins)
+## Visualizations (9 Charts)
 
-### Installation & Setup
+| # | Chart | Type |
+|---|-------|------|
+| 1 | Global Heatmap | Choropleth Map (D3 + TopoJSON) |
+| 2 | Top Affected Nations | Vertical Bar Chart |
+| 3 | Distribution Analysis | Donut Chart |
+| 4 | Temporal Evolution | Multi-series Line Chart |
+| 5 | Multivariate Analysis | Logarithmic Bubble Chart |
+| 6 | Fatality Rate Ranking | Horizontal Bar Chart |
+| 7 | Hierarchical Impact View | Squarified Treemap |
+| 8 | Case Outcome by Region | 100% Stacked Bar Chart |
+| 9 | Country Comparison Radar | Spider / Radar Chart |
 
-1. **Clone or download this repository**
+---
 
-2. **Serve the files locally** (using any HTTP server):
+## Tech Stack
 
-   Using Python:
-   ```bash
-   python -m http.server 8000
+- **D3.js v7** — all SVG chart rendering
+- **TopoJSON** — world map boundary data
+- **HTML5 / CSS3 / Vanilla JS** — no frameworks, no build step
+- **CSS Custom Properties** — full dark/light theme system
+
+---
+
+## Data Files
+
+| File | Rows | Description |
+|------|------|-------------|
+| `data/worldometer_data.csv` | 208 | Country-level snapshot (cases, deaths, tests, population) |
+| `data/day_wise.csv` | 188 | Global daily totals (Jan 22 – Jul 27, 2020) |
+| `data/country_wise_latest.csv` | 188 | Weekly change supplement per country |
+
+---
+
+## Run Locally
+
+```bash
+cd covid-dashboard
+python -m http.server 8080
+# open http://localhost:8080
+```
+
+---
+
+## Screenshots
+
+![Hero](screenshots/01_hero.png)
+![World Map](screenshots/03_world_map.png)
+![Line Chart](screenshots/07_line_chart.png)
+![Bubble Chart](screenshots/08_bubble_chart.png)

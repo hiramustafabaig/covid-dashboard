@@ -539,7 +539,7 @@ function renderBubbleChart(data) {
 
     const width  = container.clientWidth || 500;
     const height = 420;
-    const margin = { top: 20, right: 20, bottom: 60, left: 75 };
+    const margin = { top: 20, right: 150, bottom: 70, left: 80 };
     const iw = width  - margin.left - margin.right;
     const ih = height - margin.top  - margin.bottom;
 
@@ -561,24 +561,45 @@ function renderBubbleChart(data) {
         .range([ih,0]).nice();
 
     const maxTests = d3.max(fd, d=>d.testsPerMillion) || 1;
-    const rScale = d3.scaleSqrt().domain([0, maxTests]).range([4, 30]);
+    const rScale = d3.scaleSqrt().domain([0, maxTests]).range([4, 28]);
 
     const color = d3.scaleOrdinal().domain(Object.keys(regionColors)).range(Object.values(regionColors));
 
+    // Explicit tick values for clean log axes — only 5-6 ticks each
+    const xMax = d3.max(fd, d => d.casesPerMillion);
+    const yMax = d3.max(fd, d => d.deathsPerMillion);
+    const xTicks = [100, 500, 2000, 10000, 50000].filter(v => v <= xMax * 1.1);
+    const yTicks = [1, 5, 20, 100, 500].filter(v => v <= yMax * 1.1);
+
     svg.append('g').attr('class','grid')
-        .call(d3.axisLeft(yScale).tickSize(-iw).tickFormat(''))
-        .selectAll('line').attr('stroke','rgba(148,163,184,0.15)');
+        .call(d3.axisLeft(yScale).tickValues(yTicks).tickSize(-iw).tickFormat(''))
+        .selectAll('line').attr('stroke','rgba(148,163,184,0.12)');
     svg.select('.grid .domain').remove();
 
-    svg.append('g').attr('class','axis').attr('transform',`translate(0,${ih})`)
-        .call(d3.axisBottom(xScale).tickFormat(d3.format('~s')));
-    svg.append('g').attr('class','axis')
-        .call(d3.axisLeft(yScale).tickFormat(d3.format('~s')));
+    const fmt = d => d >= 1000 ? (d/1000).toFixed(0)+'k' : String(d);
 
-    svg.append('text').attr('x',iw/2).attr('y',ih+48).attr('text-anchor','middle')
-        .style('font-size','11px').style('fill','var(--text-tertiary)').text('Cases per Million (log)');
-    svg.append('text').attr('transform','rotate(-90)').attr('x',-ih/2).attr('y',-60)
-        .attr('text-anchor','middle').style('font-size','11px').style('fill','var(--text-tertiary)').text('Deaths per Million (log)');
+    // X axis
+    svg.append('g').attr('class','axis').attr('transform',`translate(0,${ih})`)
+        .call(d3.axisBottom(xScale).tickValues(xTicks).tickFormat(fmt))
+        .selectAll('text').style('font-size','11px');
+
+    // Y axis
+    svg.append('g').attr('class','axis')
+        .call(d3.axisLeft(yScale).tickValues(yTicks).tickFormat(fmt))
+        .selectAll('text').style('font-size','11px');
+
+    // Axis labels — well-spaced
+    svg.append('text').attr('x',iw/2).attr('y',ih+52)
+        .attr('text-anchor','middle')
+        .style('font-size','11px').style('fill','var(--text-secondary)')
+        .text('Cases per Million (log scale)');
+
+    svg.append('text')
+        .attr('transform','rotate(-90)')
+        .attr('x',-ih/2).attr('y',-64)
+        .attr('text-anchor','middle')
+        .style('font-size','11px').style('fill','var(--text-secondary)')
+        .text('Deaths per Million (log scale)');
 
     const gs = svg.selectAll('g.bub').data(fd).enter().append('g').attr('class','bub')
         .attr('transform',d=>`translate(${xScale(d.casesPerMillion)},${yScale(d.deathsPerMillion)})`);
@@ -602,23 +623,30 @@ function renderBubbleChart(data) {
             getTooltip().style('opacity',0);
         });
 
-    gs.filter(d=>rScale(d.testsPerMillion||0)>14)
+    // Only label bubbles that are large enough and not too crowded
+    gs.filter(d=>rScale(d.testsPerMillion||0)>16)
         .append('text').attr('text-anchor','middle')
-        .attr('dy',d=>-rScale(d.testsPerMillion||0)-4)
+        .attr('dy',d=>-rScale(d.testsPerMillion||0)-5)
         .style('font-size','9px').style('fill','var(--text-primary)').style('font-weight','500')
-        .text(d=>d.country.length>12?d.country.slice(0,10)+'…':d.country);
+        .style('pointer-events','none')
+        .text(d=>d.country.length>10?d.country.slice(0,9)+'…':d.country);
 
-    // Continent legend
-    const leg = svg.append('g').attr('transform',`translate(${iw-120},0)`);
+    // Continent legend — placed in right margin, outside plot area
+    const leg = svg.append('g').attr('transform',`translate(${iw+12},10)`);
+    leg.append('text').attr('x',0).attr('y',-4)
+        .style('font-size','9px').style('font-weight','600')
+        .style('fill','var(--text-secondary)').text('Continent');
     const continents = [...new Set(fd.map(d=>d.continent||'Other'))];
     continents.forEach((c,i)=>{
-        leg.append('circle').attr('cx',6).attr('cy',i*18+6).attr('r',5).attr('fill',color(c)).attr('opacity',0.8);
-        leg.append('text').attr('x',16).attr('y',i*18+10).style('font-size','9px').style('fill','var(--text-secondary)').text(c);
+        leg.append('circle').attr('cx',5).attr('cy',i*17+8).attr('r',5).attr('fill',color(c)).attr('opacity',0.85);
+        leg.append('text').attr('x',14).attr('y',i*17+12).style('font-size','9px').style('fill','var(--text-secondary)').text(c);
     });
-    // Size legend note
-    svg.append('text').attr('x',5).attr('y',ih-5)
-        .style('font-size','9px').style('fill','var(--text-tertiary)')
-        .text('Bubble size = Tests per Million');
+    // Bubble size note below legend
+    const noteY = continents.length * 17 + 22;
+    leg.append('text').attr('x',0).attr('y',noteY)
+        .style('font-size','8.5px').style('fill','var(--text-tertiary)').text('Bubble size =');
+    leg.append('text').attr('x',0).attr('y',noteY+13)
+        .style('font-size','8.5px').style('fill','var(--text-tertiary)').text('Tests/Million');
 
     const resetBtn = document.getElementById('resetBubbleBtn');
     if (resetBtn) {

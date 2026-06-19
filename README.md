@@ -1,6 +1,6 @@
 # COVID Intelligence Dashboard
 
-**Live Demo → [https://omerbindawood.github.io/covid-dashboard/](https://omerbindawood.github.io/covid-dashboard/)**
+**Live Demo → [https://hiramustafabaig.github.io/covid-dashboard/](https://hiramustafabaig.github.io/covid-dashboard/)**
 
 An interactive global pandemic data visualization platform built with D3.js v7. Covers 208 countries across 188 days (January 22 – July 27, 2020) using real Kaggle COVID-19 data.
 
@@ -15,6 +15,7 @@ An interactive global pandemic data visualization platform built with D3.js v7. 
 | **Team** | Hira Baig (SP23-BDS-019) · Omer Bin Dawood (SP23-BDS-041) |
 | **Data** | Kaggle COVID-19 Dataset (Worldometer) |
 | **Data Period** | Jan 22 – Jul 27, 2020 · 208 countries |
+| **GitHub** | [hiramustafabaig](https://github.com/hiramustafabaig) |
 
 ---
 
@@ -60,12 +61,3 @@ cd covid-dashboard
 python -m http.server 8080
 # open http://localhost:8080
 ```
-
----
-
-## Screenshots
-
-![Hero](screenshots/01_hero.png)
-![World Map](screenshots/03_world_map.png)
-![Line Chart](screenshots/07_line_chart.png)
-![Bubble Chart](screenshots/08_bubble_chart.png)

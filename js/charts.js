@@ -13,14 +13,15 @@ const fatalityColorScale = d3.scaleLinear()
     .range(['#10B981','#34D399','#F59E0B','#F97316','#EF4444']);
 
 const regionColors = {
-    'Asia':          '#3B82F6',
-    'Europe':        '#8B5CF6',
-    'North America': '#10B981',
-    'South America': '#06B6D4',
-    'Americas':      '#10B981',
-    'Africa':        '#F59E0B',
-    'Oceania':       '#EC4899',
-    'Other':         '#94A3B8',
+    'Asia':               '#3B82F6',
+    'Europe':             '#8B5CF6',
+    'North America':      '#10B981',
+    'South America':      '#06B6D4',
+    'Americas':           '#10B981',
+    'Africa':             '#F59E0B',
+    'Oceania':            '#EC4899',
+    'Australia/Oceania':  '#EC4899',
+    'Other':              '#94A3B8',
 };
 
 function getTooltip() {

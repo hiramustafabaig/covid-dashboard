@@ -254,7 +254,7 @@ function getFilteredData() {
         europe:   ['europe'],
         americas: ['north america', 'south america', 'americas'],
         africa:   ['africa'],
-        oceania:  ['oceania', 'australia-oceania'],
+        oceania:  ['oceania', 'australia/oceania', 'australia-oceania'],
     };
     const allowed = map[region] || [region];
     return globalData.filter(d => d.continent && allowed.includes(d.continent.toLowerCase()));
@@ -369,6 +369,8 @@ function renderAllVisualizations() {
     renderRadarChart(globalData, c1, c2);
 
     updateStatsGrid(fd);
+    updateHeroStats(fd);
+    updateAnalyticsStats(fd);
 }
 
 // ── Controls ──────────────────────────────────────────────────────────────────
